@@ -55,4 +55,10 @@ class CWSaabTransform:
         return self.intermediate_nodes
     
     def get_discarded_nodes(self):
-        return self.discarded_nodes 
+        return self.discarded_nodes
+        
+    def energy_histogram(self):
+        """Return energy histogram for visualization"""
+        if not hasattr(self, 'energy_ratios') or self.energy_ratios is None:
+            return None
+        return self.energy_ratios 

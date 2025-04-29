@@ -43,7 +43,7 @@ class PixelHopUnit:
             stride: Stride for patch extraction
             pooling: Size of pooling window, or None for no pooling
         """
-        self.transform = transform
+        self.saab_transformer = transform
         self.window_size = window_size
         self.stride = stride
         self.pooling = pooling
@@ -53,7 +53,7 @@ class PixelHopUnit:
         patches = extract_patches(X, self.window_size, self.stride)
         n_samples, h, w, kh, kw, c = patches.shape
         patches_flat = patches.reshape(-1, kh * kw * c)
-        self.transform.fit(patches_flat)
+        self.saab_transformer.fit(patches_flat)
         return self
     
     def transform(self, X):
@@ -61,7 +61,7 @@ class PixelHopUnit:
         patches = extract_patches(X, self.window_size, self.stride)
         n_samples, h, w, kh, kw, c = patches.shape
         patches_flat = patches.reshape(-1, kh * kw * c)
-        transformed = self.transform.transform(patches_flat)
+        transformed = self.saab_transformer.transform(patches_flat)
         n_kernels = transformed.shape[1]
         features = transformed.reshape(n_samples, h, w, n_kernels)
         if self.pooling is not None:
@@ -69,19 +69,19 @@ class PixelHopUnit:
         return features
     
     def get_num_parameters(self):
-        return self.transform.get_num_parameters()
+        return self.saab_transformer.get_num_parameters()
     
     def get_intermediate_nodes(self):
         """Number of intermediate nodes (for CWSaabTransform)"""
-        if hasattr(self.transform, 'get_intermediate_nodes'):
-            return self.transform.get_intermediate_nodes()
+        if hasattr(self.saab_transformer, 'get_intermediate_nodes'):
+            return self.saab_transformer.get_intermediate_nodes()
         return 0
     
     def get_discarded_nodes(self):
         """Number of discarded nodes (for CWSaabTransform)"""
-        if hasattr(self.transform, 'get_discarded_nodes'):
-            return self.transform.get_discarded_nodes()
+        if hasattr(self.saab_transformer, 'get_discarded_nodes'):
+            return self.saab_transformer.get_discarded_nodes()
         return 0
 
     def get_energy_histogram(self):
-        return self.transform.energy_histogram() 
+        return self.saab_transformer.energy_histogram() 
