@@ -1,7 +1,4 @@
 import numpy as np
-from .saab_transform import SaabTransform
-from sklearn.feature_extraction.image import extract_patches_2d
-from concurrent.futures import ThreadPoolExecutor
 
 def extract_patches(images, window_size, stride=1):
     """Extract image patches with given window size and stride"""
@@ -9,10 +6,12 @@ def extract_patches(images, window_size, stride=1):
         window_height = window_width = window_size
     else:
         window_height, window_width = window_size
+        
     n_samples, height, width, n_channels = images.shape
     out_height = (height - window_height) // stride + 1
     out_width = (width - window_width) // stride + 1
     patches = np.zeros((n_samples, out_height, out_width, window_height, window_width, n_channels))
+    
     for i in range(out_height):
         for j in range(out_width):
             h_start = i * stride
@@ -20,6 +19,7 @@ def extract_patches(images, window_size, stride=1):
             w_start = j * stride
             w_end = w_start + window_width
             patches[:, i, j] = images[:, h_start:h_end, w_start:w_end]
+    
     return patches
 
 def max_pooling(features, pool_size=(2, 2)):
